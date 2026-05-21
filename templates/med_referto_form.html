@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Nuovo referto — Dr. {{ medico.nome }} {{ medico.cognome }}</h2>
+
+<form method="post" class="mt-3" style="max-width:520px">
+  <div class="mb-3">
+    <label class="form-label">Visita *</label>
+    <select name="visita_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for v in visite %}
+      <option value="{{ v.id }}">
+        #{{ v.id }} — {{ v.paziente }} / {{ v.esame }} ({{ v.data }})
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Data rilascio *</label>
+    <input type="date" name="data_rilascio" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Contenuto</label>
+    <textarea name="contenuto" class="form-control" rows="4" placeholder="Esito della visita..."></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Salva</button>
+  <a href="/medico/{{ medico.id }}" class="btn btn-secondary ms-2">Annulla</a>
+</form>
+{% endblock %}

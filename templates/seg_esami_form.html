@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{% if esame %}Modifica esame{% else %}Nuovo esame{% endif %}</h2>
+
+<form method="post" class="mt-3" style="max-width:480px">
+  <div class="mb-3">
+    <label class="form-label">Nome *</label>
+    <input type="text" name="nome" class="form-control" required
+           value="{{ esame.nome if esame else '' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Reparto *</label>
+    <select name="reparto_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for r in reparti %}
+      <option value="{{ r.id }}"
+        {% if esame and esame.reparto_id == r.id %}selected{% endif %}>
+        {{ r.nome }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Salva</button>
+  <a href="/segreteria/esami" class="btn btn-secondary ms-2">Annulla</a>
+</form>
+{% endblock %}

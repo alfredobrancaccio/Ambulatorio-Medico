@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <div>
+    <h2 class="mb-0">Dr. {{ medico.nome }} {{ medico.cognome }}</h2>
+    <span class="badge bg-success fs-6">{{ medico.reparto }}</span>
+  </div>
+  <div class="ms-auto">
+    <a href="/medico/{{ medico.id }}/nuovo-referto" class="btn btn-outline-dark btn-sm">+ Referto</a>
+    <a href="/medico/{{ medico.id }}/nuova-prescrizione" class="btn btn-outline-danger btn-sm ms-1">+ Prescrizione</a>
+    <a href="/medico" class="btn btn-secondary btn-sm ms-2">← Cambia medico</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card text-center border-success">
+      <div class="card-body">
+        <div class="fs-1 fw-bold text-success">{{ visite|length }}</div>
+        <div class="text-muted">Visite</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center border-dark">
+      <div class="card-body">
+        <div class="fs-1 fw-bold text-dark">{{ n_referti }}</div>
+        <div class="text-muted">Referti emessi</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center border-danger">
+      <div class="card-body">
+        <div class="fs-1 fw-bold text-danger">{{ prescrizioni|length }}</div>
+        <div class="text-muted">Prescrizioni</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>Le mie visite</h4>
+<table class="table table-sm table-striped table-bordered mb-4">
+  <thead class="table-success">
+    <tr><th>ID</th><th>Paziente</th><th>Esame</th><th>Data</th><th>Note</th></tr>
+  </thead>
+  <tbody>
+    {% for v in visite %}
+    <tr>
+      <td>{{ v.id }}</td>
+      <td>{{ v.paziente }}</td>
+      <td>{{ v.esame }}</td>
+      <td>{{ v.data }}</td>
+      <td class="text-muted small">{{ v.note or "—" }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted">Nessuna visita.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h4>Prescrizioni emesse</h4>
+<table class="table table-sm table-striped table-bordered">
+  <thead class="table-danger">
+    <tr><th>ID</th><th>Paziente</th><th>Farmaco</th><th>Dose</th><th>Data</th></tr>
+  </thead>
+  <tbody>
+    {% for pr in prescrizioni %}
+    <tr>
+      <td>{{ pr.id }}</td>
+      <td>{{ pr.paziente }}</td>
+      <td>{{ pr.farmaco }}</td>
+      <td>{{ pr.dose }}</td>
+      <td>{{ pr.data_emissione }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted">Nessuna prescrizione.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

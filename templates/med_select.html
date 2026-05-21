@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Area Medico</h2>
+  <a href="/" class="btn btn-secondary btn-sm">← Home</a>
+</div>
+
+<p class="text-muted">Seleziona il tuo profilo per accedere alla dashboard.</p>
+
+<div class="row g-3 mt-1">
+  {% for m in medici %}
+  <div class="col-md-4">
+    <a href="/medico/{{ m.id }}" class="text-decoration-none">
+      <div class="card h-100 border-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-1">Dr. {{ m.nome }} {{ m.cognome }}</h5>
+          <span class="badge bg-success">{{ m.reparto }}</span>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% else %}
+  <div class="col">
+    <p class="text-muted">Nessun medico registrato.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mb-5">
+  <h1 class="display-5 fw-bold">Gestionale Ambulatorio Medico</h1>
+  <p class="lead text-muted">Seleziona l'area di accesso</p>
+</div>
+
+<div class="row g-4 justify-content-center">
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-primary">
+      <div class="card-body text-center p-4">
+        <div class="fs-1 mb-3">🗂️</div>
+        <h4 class="card-title">Segreteria</h4>
+        <p class="card-text text-muted">Gestione pazienti, reparti, medici, esami e prenotazione visite.</p>
+        <a href="/segreteria" class="btn btn-primary mt-2">Accedi</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-success">
+      <div class="card-body text-center p-4">
+        <div class="fs-1 mb-3">🩺</div>
+        <h4 class="card-title">Medico</h4>
+        <p class="card-text text-muted">Consulta le proprie visite, emetti referti e prescrizioni.</p>
+        <a href="/medico" class="btn btn-success mt-2">Accedi</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-info">
+      <div class="card-body text-center p-4">
+        <div class="fs-1 mb-3">👤</div>
+        <h4 class="card-title">Paziente</h4>
+        <p class="card-text text-muted">Consulta le proprie visite, referti e prescrizioni.</p>
+        <a href="/paziente" class="btn btn-info mt-2">Accedi</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

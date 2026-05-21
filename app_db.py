@@ -47,8 +47,8 @@ class AmbulatorioDatabase:
         if db_url:
             if reset:
                 self._conn.execute(
-                    "DROP TABLE IF EXISTS prescrizioni, referti, appuntamenti,"
-                    " esami, medici, pazienti CASCADE"
+                    "DROP TABLE IF EXISTS prescrizioni, referti, visite,"
+                    " esami, medici, reparti, pazienti CASCADE"
                 )
                 self._conn.commit()
             with open(SCHEMA_PATH, encoding="utf-8") as f:
@@ -61,12 +61,13 @@ class AmbulatorioDatabase:
                     self._conn.execute(stmt)
             self._conn.commit()
         else:
-            if reset and os.path.exists(DB_PATH):
-                self._conn.close()
-                os.remove(DB_PATH)
-                self._conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-                self._conn.row_factory = sqlite3.Row
+            if reset:
+                self._conn.execute("PRAGMA foreign_keys = OFF")
+                for tbl in ("prescrizioni", "referti", "visite",
+                            "esami", "medici", "reparti", "pazienti"):
+                    self._conn.execute(f"DROP TABLE IF EXISTS {tbl}")
                 self._conn.execute("PRAGMA foreign_keys = ON")
+                self._conn.commit()
             with open(SCHEMA_PATH, encoding="utf-8") as f:
                 schema = f.read()
             with open(SEED_PATH, encoding="utf-8") as f:
