@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{% if appuntamento %}Modifica appuntamento{% else %}Nuovo appuntamento{% endif %}</h2>
+
+<form method="post"
+      action="{% if appuntamento %}/appuntamenti/{{ appuntamento.id }}/modifica{% else %}/appuntamenti/nuovo{% endif %}"
+      class="mt-3" style="max-width:500px">
+
+  <div class="mb-3">
+    <label class="form-label">Paziente</label>
+    <select name="paziente_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for p in pazienti %}
+      <option value="{{ p.id }}"
+        {% if appuntamento and appuntamento.paziente_id == p.id %}selected{% endif %}>
+        {{ p.nome }} {{ p.cognome }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Medico</label>
+    <select name="medico_id" id="medico_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for m in medici %}
+      <option value="{{ m.id }}" data-reparto="{{ m.reparto }}"
+        {% if appuntamento and appuntamento.medico_id == m.id %}selected{% endif %}>
+        {{ m.nome }} {{ m.cognome }} ({{ m.reparto }})
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Esame <small class="text-muted">(filtrato per reparto medico)</small></label>
+    <select name="esame_id" id="esame_id" class="form-select" required>
+      <option value="">-- seleziona prima il medico --</option>
+      {% for e in esami %}
+      <option value="{{ e.id }}" data-reparto="{{ e.reparto }}"
+        {% if appuntamento and appuntamento.esame_id == e.id %}selected{% endif %}>
+        {{ e.nome }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Data</label>
+    <input type="date" name="data" class="form-control" required
+           value="{{ appuntamento.data if appuntamento else '' }}">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Salva</button>
+  <a href="/appuntamenti" class="btn btn-secondary ms-2">Annulla</a>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function filtraEsami() {
+    const medSel  = document.getElementById("medico_id");
+    const reparto = medSel.options[medSel.selectedIndex]?.dataset.reparto || "";
+    const esameSel = document.getElementById("esame_id");
+    for (const opt of esameSel.options) {
+      if (!opt.value) continue;
+      opt.style.display = opt.dataset.reparto === reparto ? "" : "none";
+    }
+  }
+
+  document.getElementById("medico_id").addEventListener("change", function () {
+    document.getElementById("esame_id").value = "";
+    filtraEsami();
+  });
+
+  document.addEventListener("DOMContentLoaded", filtraEsami);
+</script>
+{% endblock %}

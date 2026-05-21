@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Appuntamenti</h2>
+
+<table class="table table-striped table-bordered mb-5">
+  <thead class="table-primary">
+    <tr><th>ID</th><th>Paziente</th><th>Medico</th><th>Esame</th><th>Data</th></tr>
+  </thead>
+  <tbody>
+    {% for a in appuntamenti %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.paziente }}</td>
+      <td>{{ a.medico }}</td>
+      <td>{{ a.esame }}</td>
+      <td>{{ a.data }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted">Nessun appuntamento.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h4>Aggiungi appuntamento</h4>
+<form method="post" action="/appuntamenti/nuovo" class="row g-2 align-items-end">
+  <div class="col-auto">
+    <label class="form-label">Paziente</label>
+    <select name="paziente_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for p in pazienti %}
+      <option value="{{ p.id }}">{{ p.nome }} {{ p.cognome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Medico</label>
+    <select name="medico_id" id="medico_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for m in medici %}
+      <option value="{{ m.id }}" data-reparto="{{ m.reparto }}">
+        {{ m.nome }} {{ m.cognome }} ({{ m.reparto }})
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Esame</label>
+    <select name="esame_id" id="esame_id" class="form-select" required>
+      <option value="">-- seleziona prima il medico --</option>
+      {% for e in esami %}
+      <option value="{{ e.id }}" data-reparto="{{ e.reparto }}" style="display:none">
+        {{ e.nome }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Data</label>
+    <input type="date" name="data" class="form-control" required>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Aggiungi</button>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById("medico_id").addEventListener("change", function () {
+    const reparto = this.options[this.selectedIndex].dataset.reparto || "";
+    const esameSel = document.getElementById("esame_id");
+    let primo = true;
+    for (const opt of esameSel.options) {
+      if (!opt.value) { continue; }
+      const visibile = opt.dataset.reparto === reparto;
+      opt.style.display = visibile ? "" : "none";
+      if (visibile && primo) { esameSel.value = opt.value; primo = false; }
+    }
+    if (primo) { esameSel.value = ""; }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Medici</h2>
+  <a href="/medici/nuovo" class="btn btn-primary">+ Nuovo</a>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead class="table-primary">
+    <tr><th>ID</th><th>Nome</th><th>Cognome</th><th>Reparto</th><th>Azioni</th></tr>
+  </thead>
+  <tbody>
+    {% for m in medici %}
+    <tr>
+      <td>{{ m.id }}</td>
+      <td>{{ m.nome }}</td>
+      <td>{{ m.cognome }}</td>
+      <td>{{ m.reparto }}</td>
+      <td>
+        <a href="/medici/{{ m.id }}/dashboard" class="btn btn-sm btn-info text-white">Dashboard</a>
+        <a href="/medici/{{ m.id }}/modifica" class="btn btn-sm btn-warning">Modifica</a>
+        <form method="post" action="/medici/{{ m.id }}/elimina" class="d-inline"
+              onsubmit="return confirm('Eliminare il medico e tutti i dati collegati?')">
+          <button class="btn btn-sm btn-danger">Elimina</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted">Nessun medico.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

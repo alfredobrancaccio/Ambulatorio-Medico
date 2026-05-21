@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Esami</h2>
+
+<table class="table table-striped table-bordered">
+  <thead class="table-primary">
+    <tr><th>ID</th><th>Nome</th><th>Reparto</th></tr>
+  </thead>
+  <tbody>
+    {% for e in esami %}
+    <tr>
+      <td>{{ e.id }}</td>
+      <td>{{ e.nome }}</td>
+      <td>{{ e.reparto }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3" class="text-center text-muted">Nessun esame.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

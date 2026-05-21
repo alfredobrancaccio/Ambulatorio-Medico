@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Referti</h2>
+
+<table class="table table-striped table-bordered mb-5">
+  <thead class="table-primary">
+    <tr><th>ID</th><th>Data rilascio</th><th>Paziente</th><th>Esame</th></tr>
+  </thead>
+  <tbody>
+    {% for r in referti %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.data_rilascio }}</td>
+      <td>{{ r.paziente }}</td>
+      <td>{{ r.esame }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="text-center text-muted">Nessun referto.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h4>Aggiungi referto</h4>
+<form method="post" action="/referti/nuovo" class="row g-2 align-items-end">
+  <div class="col-auto">
+    <label class="form-label">Appuntamento</label>
+    <select name="appuntamento_id" class="form-select" required>
+      <option value="">-- seleziona --</option>
+      {% for a in appuntamenti %}
+      <option value="{{ a.id }}">
+        #{{ a.id }} — {{ a.paziente }} / {{ a.esame }} ({{ a.data }})
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Data rilascio</label>
+    <input type="date" name="data_rilascio" class="form-control" required>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Aggiungi</button>
+  </div>
+</form>
+
+{% endblock %}
