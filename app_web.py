@@ -70,7 +70,7 @@ def _valida_visita(medico_id, paziente_id, esame_id):
 
 # ── HOME ──────────────────────────────────────────────────────────────────────
 
-@app.route("/")
+@app.get("/")
 def index():
     return render_template("index.html")
 
@@ -79,7 +79,7 @@ def index():
 # SEGRETERIA
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app.route("/segreteria")
+@app.get("/segreteria")
 def seg_dashboard():
     def n(sql):
         return app_db.query_one(sql)["COUNT(*)"]
@@ -97,7 +97,7 @@ def seg_dashboard():
 
 # ── pazienti ──────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/pazienti")
+@app.get("/segreteria/pazienti")
 def seg_pazienti_list():
     return render_template("seg_pazienti_list.html",
                            pazienti=app_db.query(
@@ -149,7 +149,7 @@ def seg_pazienti_modifica(id):
     return render_template("seg_pazienti_form.html", paziente=paziente)
 
 
-@app.route("/segreteria/pazienti/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/pazienti/<int:id>/elimina")
 def seg_pazienti_elimina(id):
     app_db.execute("DELETE FROM pazienti WHERE id = ?", (id,))
     flash("[OK] Paziente eliminato.")
@@ -158,7 +158,7 @@ def seg_pazienti_elimina(id):
 
 # ── reparti ───────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/reparti")
+@app.get("/segreteria/reparti")
 def seg_reparti_list():
     return render_template("seg_reparti_list.html",
                            reparti=app_db.query("SELECT id, nome FROM reparti ORDER BY nome"))
@@ -196,7 +196,7 @@ def seg_reparti_modifica(id):
     return render_template("seg_reparti_form.html", reparto=reparto)
 
 
-@app.route("/segreteria/reparti/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/reparti/<int:id>/elimina")
 def seg_reparti_elimina(id):
     app_db.execute("DELETE FROM reparti WHERE id = ?", (id,))
     flash("[OK] Reparto eliminato.")
@@ -205,7 +205,7 @@ def seg_reparti_elimina(id):
 
 # ── medici ────────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/medici")
+@app.get("/segreteria/medici")
 def seg_medici_list():
     return render_template("seg_medici_list.html",
                            medici=app_db.query(
@@ -254,7 +254,7 @@ def seg_medici_modifica(id):
                            reparti=app_db.query("SELECT id, nome FROM reparti ORDER BY nome"))
 
 
-@app.route("/segreteria/medici/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/medici/<int:id>/elimina")
 def seg_medici_elimina(id):
     app_db.execute("DELETE FROM medici WHERE id = ?", (id,))
     flash("[OK] Medico eliminato.")
@@ -263,7 +263,7 @@ def seg_medici_elimina(id):
 
 # ── esami ─────────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/esami")
+@app.get("/segreteria/esami")
 def seg_esami_list():
     return render_template("seg_esami_list.html",
                            esami=app_db.query("""
@@ -314,7 +314,7 @@ def seg_esami_modifica(id):
                            reparti=app_db.query("SELECT id, nome FROM reparti ORDER BY nome"))
 
 
-@app.route("/segreteria/esami/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/esami/<int:id>/elimina")
 def seg_esami_elimina(id):
     app_db.execute("DELETE FROM esami WHERE id = ?", (id,))
     flash("[OK] Esame eliminato.")
@@ -323,7 +323,7 @@ def seg_esami_elimina(id):
 
 # ── visite ────────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/visite")
+@app.get("/segreteria/visite")
 def seg_visite_list():
     return render_template("seg_visite_list.html",
                            visite=app_db.query(
@@ -392,7 +392,7 @@ def seg_visite_modifica(id):
                            esami=app_db.query("SELECT e.id, e.nome, e.reparto_id FROM esami e ORDER BY e.nome"))
 
 
-@app.route("/segreteria/visite/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/visite/<int:id>/elimina")
 def seg_visite_elimina(id):
     app_db.execute("DELETE FROM visite WHERE id = ?", (id,))
     flash("[OK] Visita eliminata.")
@@ -401,7 +401,7 @@ def seg_visite_elimina(id):
 
 # ── referti ───────────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/referti")
+@app.get("/segreteria/referti")
 def seg_referti_list():
     return render_template("seg_referti_list.html",
                            referti=app_db.query(
@@ -456,7 +456,7 @@ def seg_referti_modifica(id):
                            visite=app_db.query(_SQL_VISITA_FULL + " ORDER BY v.data DESC, v.id"))
 
 
-@app.route("/segreteria/referti/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/referti/<int:id>/elimina")
 def seg_referti_elimina(id):
     app_db.execute("DELETE FROM referti WHERE id = ?", (id,))
     flash("[OK] Referto eliminato.")
@@ -465,7 +465,7 @@ def seg_referti_elimina(id):
 
 # ── prescrizioni ──────────────────────────────────────────────────────────────
 
-@app.route("/segreteria/prescrizioni")
+@app.get("/segreteria/prescrizioni")
 def seg_prescrizioni_list():
     return render_template("seg_prescrizioni_list.html",
                            prescrizioni=app_db.query(
@@ -533,7 +533,7 @@ def seg_prescrizioni_modifica(id):
                            pazienti=app_db.query("SELECT id, nome, cognome FROM pazienti ORDER BY cognome, nome"))
 
 
-@app.route("/segreteria/prescrizioni/<int:id>/elimina", methods=["POST"])
+@app.post("/segreteria/prescrizioni/<int:id>/elimina")
 def seg_prescrizioni_elimina(id):
     app_db.execute("DELETE FROM prescrizioni WHERE id = ?", (id,))
     flash("[OK] Prescrizione eliminata.")
@@ -544,14 +544,14 @@ def seg_prescrizioni_elimina(id):
 # MEDICO
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app.route("/medico")
+@app.get("/medico")
 def med_select():
     return render_template("med_select.html",
                            medici=app_db.query(
                                _SQL_MEDICO_FULL + " ORDER BY m.cognome, m.nome"))
 
 
-@app.route("/medico/<int:id>")
+@app.get("/medico/<int:id>")
 def med_dashboard(id):
     medico = app_db.query_one(_SQL_MEDICO_FULL + " WHERE m.id = ?", (id,))
     if medico is None:
@@ -647,7 +647,7 @@ def med_nuova_prescrizione(mid):
 # PAZIENTE
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app.route("/paziente")
+@app.get("/paziente")
 def paz_select():
     return render_template("paz_select.html",
                            pazienti=app_db.query(
@@ -655,7 +655,7 @@ def paz_select():
                                " FROM pazienti ORDER BY cognome, nome"))
 
 
-@app.route("/paziente/<int:id>")
+@app.get("/paziente/<int:id>")
 def paz_dashboard(id):
     paziente = app_db.query_one("SELECT * FROM pazienti WHERE id = ?", (id,))
     if paziente is None:
