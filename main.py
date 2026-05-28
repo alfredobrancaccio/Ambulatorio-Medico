@@ -1,5 +1,5 @@
 import sys
-from app_db import AmbulatorioDatabase
+from app_db import init_db
 
 
 def main():
@@ -7,15 +7,14 @@ def main():
     reset = "--reset" in args
     web   = "--web" in args
 
-    db = AmbulatorioDatabase()
-    db.initialize(reset=reset)
+    init_db(reset=reset)
 
     if web:
         from app_web import app
         app.run(debug=True)
     else:
         from app_repl import AmbulatorioREPL
-        AmbulatorioREPL(db).esegui()
+        AmbulatorioREPL().esegui()
 
 
 main()

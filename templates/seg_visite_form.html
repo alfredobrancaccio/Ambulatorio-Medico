@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{% if visita %}Modifica visita{% else %}Nuova visita{% endif %}</h2>
-
-<form method="post" class="mt-3" style="max-width:520px">
-
-  <div class="mb-3">
-    <label class="form-label">Paziente *</label>
-    <select name="paziente_id" class="form-select" required>
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:4px;">
+  {% if visita %}Modifica visita{% else %}Nuova visita{% endif %}
+</h2>
+<form method="post" class="form">
+  <div class="field">
+    <label>Paziente *</label>
+    <select name="paziente_id" required>
       <option value="">-- seleziona --</option>
       {% for p in pazienti %}
       <option value="{{ p.id }}"
@@ -16,10 +16,9 @@
       {% endfor %}
     </select>
   </div>
-
-  <div class="mb-3">
-    <label class="form-label">Medico *</label>
-    <select id="sel-medico" name="medico_id" class="form-select" required>
+  <div class="field">
+    <label>Medico *</label>
+    <select id="sel-medico" name="medico_id" required>
       <option value="">-- seleziona --</option>
       {% for m in medici %}
       <option value="{{ m.id }}" data-reparto="{{ m.reparto_id }}"
@@ -29,10 +28,9 @@
       {% endfor %}
     </select>
   </div>
-
-  <div class="mb-3">
-    <label class="form-label">Esame *</label>
-    <select id="sel-esame" name="esame_id" class="form-select" required>
+  <div class="field">
+    <label>Esame *</label>
+    <select id="sel-esame" name="esame_id" required>
       <option value="">-- seleziona medico prima --</option>
       {% for e in esami %}
       <option value="{{ e.id }}" data-reparto="{{ e.reparto_id }}"
@@ -42,40 +40,35 @@
       {% endfor %}
     </select>
   </div>
-
-  <div class="mb-3">
-    <label class="form-label">Data *</label>
-    <input type="date" name="data" class="form-control" required
-           value="{{ visita.data if visita else '' }}">
+  <div class="field">
+    <label>Data *</label>
+    <input type="date" name="data" required value="{{ visita.data if visita else '' }}">
   </div>
-
-  <div class="mb-3">
-    <label class="form-label">Note</label>
-    <input type="text" name="note" class="form-control"
-           value="{{ visita.note if visita else '' }}">
+  <div class="field">
+    <label>Note</label>
+    <input type="text" name="note" value="{{ visita.note if visita else '' }}">
   </div>
-
-  <button type="submit" class="btn btn-primary">Salva</button>
-  <a href="/segreteria/visite" class="btn btn-secondary ms-2">Annulla</a>
+  <div class="actions">
+    <button type="submit" class="button primary">Salva</button>
+    <a href="/segreteria/visite" class="button secondary">Annulla</a>
+  </div>
 </form>
 {% endblock %}
 
 {% block scripts %}
 <script>
-const selMedico = document.getElementById("sel-medico");
-const selEsame  = document.getElementById("sel-esame");
+const selMedico  = document.getElementById("sel-medico");
+const selEsame   = document.getElementById("sel-esame");
 const tuttiEsami = Array.from(selEsame.options).slice(1);
 
 function filtraEsami() {
   const repartoId = selMedico.options[selMedico.selectedIndex]?.dataset.reparto;
   const curVal    = selEsame.value;
   selEsame.innerHTML = "";
-  const vuota = new Option("-- seleziona --", "");
-  selEsame.add(vuota);
+  selEsame.add(new Option("-- seleziona --", ""));
   tuttiEsami.forEach(opt => {
-    if (!repartoId || opt.dataset.reparto === repartoId) {
+    if (!repartoId || opt.dataset.reparto === repartoId)
       selEsame.add(opt.cloneNode(true));
-    }
   });
   selEsame.value = curVal;
 }

@@ -1,156 +1,85 @@
-# 🏥 Ambulatorio Medico
+# Gestionale Ambulatorio Medico
 
-Sistema gestionale per ambulatori medici sviluppato in Python. Permette di gestire pazienti, medici, reparti, visite, referti e prescrizioni tramite due interfacce: una **web** (Flask) e una **REPL** da terminale.
-
----
-
-## Funzionalità
-
-Il sistema è organizzato attorno a tre ruoli principali:
-
-**Segreteria** — gestione completa dell'anagrafica e delle operazioni amministrative:
-- Pazienti (inserimento, modifica, eliminazione)
-- Reparti e medici
-- Esami (associati a un reparto)
-- Visite (con validazione reparto medico/esame)
-- Referti e prescrizioni
-
-**Medico** — vista personalizzata per ogni medico:
-- Riepilogo delle proprie visite e prescrizioni
-- Creazione di nuovi referti e prescrizioni
-
-**Paziente** — consultazione della propria cartella clinica:
-- Storico visite, referti e prescrizioni ricevute
-
----
-
-## Struttura del progetto
-
-```
-Ambulatorio-Medico/
-├── main.py           # Entry point: avvia modalità web o REPL
-├── app_db.py         # Livello database (connessione, query, inizializzazione)
-├── app_web.py        # Applicazione Flask con tutte le route
-├── app_repl.py       # Interfaccia interattiva da terminale
-├── schema.sql        # Definizione delle tabelle
-├── seed.sql          # Dati di esempio
-├── templates/        # Template HTML (Jinja2)
-└── requirements.txt  # Dipendenze Python
-```
-
----
-
-## Schema del database
-
-Il database PostgreSQL contiene le seguenti tabelle:
-
-| Tabella        | Descrizione                                      |
-|----------------|--------------------------------------------------|
-| `pazienti`     | Anagrafica dei pazienti (CF univoco)             |
-| `reparti`      | Reparti dell'ambulatorio                         |
-| `medici`       | Medici, ciascuno associato a un reparto          |
-| `esami`        | Tipi di esame, ciascuno associato a un reparto   |
-| `visite`       | Visite (paziente + medico + esame + data)        |
-| `referti`      | Referti collegati a una visita                   |
-| `prescrizioni` | Prescrizioni emesse da un medico per un paziente |
-
-> **Regola di integrità:** un medico può prescrivere solo esami del proprio reparto.
-
----
+Applicazione Python per la gestione di un ambulatorio medico. Supporta due modalità di utilizzo: interfaccia web (Flask) e REPL da terminale.
 
 ## Requisiti
 
 - Python 3.10+
-- PostgreSQL
-- Dipendenze Python (vedere `requirements.txt`):
-  - `Flask >= 3.0, < 4`
-  - `psycopg[binary] >= 3.1, < 4`
+- Flask (installabile tramite `requirements.txt`)
 
----
-
-## Installazione e avvio
-
-### 1. Clona la repository
-
-```bash
-git clone https://github.com/blumaggy-hub/Ambulatorio-Medico.git
-cd Ambulatorio-Medico
-```
-
-### 2. Installa le dipendenze
+## Installazione
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configura il database
-
-Assicurati di avere PostgreSQL attivo e accessibile, quindi imposta la variabile d'ambiente per la connessione:
+## Avvio
 
 ```bash
-export DATABASE_URL="postgresql://utente:password@localhost/ambulatorio"
-```
-
-### 4. Avvia l'applicazione
-
-**Modalità web (Flask):**
-
-```bash
-python main.py --web
-```
-
-L'app sarà disponibile su `http://127.0.0.1:5000`.
-
-**Modalità terminale (REPL):**
-
-```bash
+# REPL da terminale
 python main.py
+
+# Interfaccia web (http://127.0.0.1:5000)
+python main.py --web
+
+# Prima esecuzione: crea il database con i dati di esempio
+python main.py --reset --web
 ```
 
-**Reset del database** (ricrea le tabelle e ricarica i dati seed):
+> Il flag `--reset` va usato la prima volta per inizializzare il database. Le volte successive basta `python main.py --web`.
 
-```bash
-python main.py --reset
-# oppure con interfaccia web
-python main.py --web --reset
+## Struttura dei file
+
+```
+├── main.py          # Punto di ingresso
+├── app_db.py        # Accesso al database (SQLite)
+├── app_web.py       # Applicazione Flask (routes e logica web)
+├── app_repl.py      # Interfaccia REPL da terminale
+├── schema.sql       # Definizione delle tabelle
+├── seed.sql         # Dati iniziali di esempio
+├── requirements.txt # Dipendenze Python
+├── templates/       # Template HTML Jinja2
+├── static/          # Foglio di stile CSS personalizzato (style.css)
+└── runtime/         # Cartella creata automaticamente, contiene ambulatorio.db
 ```
 
----
+## Schema del database
 
-## Variabili d'ambiente
+| Tabella | Descrizione |
+|---|---|
+| `pazienti` | Anagrafica pazienti (nome, cognome, data nascita, codice fiscale) |
+| `reparti` | Reparti dell'ambulatorio |
+| `medici` | Medici, ciascuno assegnato a un reparto |
+| `esami` | Esami disponibili, ciascuno associato a un reparto |
+| `visite` | Prenotazioni: paziente + medico + esame + data |
+| `referti` | Referti collegati a una visita |
+| `prescrizioni` | Farmaci prescritti da un medico a un paziente |
 
-| Variabile      | Descrizione                                         | Default                      |
-|----------------|-----------------------------------------------------|------------------------------|
-| `DATABASE_URL` | URL di connessione PostgreSQL                       | *(obbligatoria)*             |
-| `SECRET_KEY`   | Chiave segreta per le sessioni Flask                | `dev-secret-ambulatorio`     |
+Ogni esame può essere eseguito solo da un medico dello stesso reparto. Questa regola è applicata sia lato server che nell'interfaccia web (filtro dinamico JS).
 
----
+## Tre ruoli
 
-## Route principali (interfaccia web)
+### Segreteria (`/segreteria`)
+Accesso completo in lettura e scrittura a tutte le entità: pazienti, reparti, medici, esami, visite, referti, prescrizioni. Dashboard con contatori globali.
 
-| Percorso                        | Descrizione                          |
-|---------------------------------|--------------------------------------|
-| `/`                             | Homepage                             |
-| `/segreteria`                   | Dashboard segreteria con statistiche |
-| `/segreteria/pazienti`          | Gestione pazienti                    |
-| `/segreteria/medici`            | Gestione medici                      |
-| `/segreteria/reparti`           | Gestione reparti                     |
-| `/segreteria/esami`             | Gestione esami                       |
-| `/segreteria/visite`            | Gestione visite                      |
-| `/segreteria/referti`           | Gestione referti                     |
-| `/segreteria/prescrizioni`      | Gestione prescrizioni                |
-| `/medico`                       | Selezione medico                     |
-| `/medico/<id>`                  | Dashboard medico                     |
-| `/paziente`                     | Selezione paziente                   |
-| `/paziente/<id>`                | Cartella clinica del paziente        |
+### Medico (`/medico`)
+Accesso al proprio profilo. Visualizza le proprie visite, può emettere referti per le visite assegnate e aggiungere prescrizioni.
 
----
+### Paziente (`/paziente`)
+Accesso in sola lettura al proprio storico: visite, referti e prescrizioni.
 
-## Tecnologie utilizzate
+## Interfaccia web
 
-- **Python** — linguaggio principale
-- **Flask** — framework web
-- **PostgreSQL** — database relazionale
-- **psycopg3** — driver PostgreSQL per Python
-- **Jinja2** — template engine HTML (incluso in Flask)
-- **SQL** — schema e query native (nessun ORM)
+L'interfaccia web è costruita con Flask e Jinja2 per il rendering dinamico dei template HTML. Lo stile grafico è realizzato con un foglio CSS personalizzato senza dipendenze esterne da framework come Bootstrap.
+
+## Interfaccia REPL
+
+```
+=== Gestionale Ambulatorio Medico ===
+Seleziona ruolo:
+  1. Segreteria
+  2. Medico
+  3. Paziente
+```
+
+Ogni ruolo espone comandi testuali. Digita `help` per la lista dei comandi disponibili nel ruolo corrente.

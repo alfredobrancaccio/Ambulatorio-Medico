@@ -1,29 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{% if paziente %}Modifica paziente{% else %}Nuovo paziente{% endif %}</h2>
-
-<form method="post" class="mt-3" style="max-width:480px">
-  <div class="mb-3">
-    <label class="form-label">Nome *</label>
-    <input type="text" name="nome" class="form-control" required
-           value="{{ paziente.nome if paziente else '' }}">
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:4px;">
+  {% if paziente %}Modifica paziente{% else %}Nuovo paziente{% endif %}
+</h2>
+<form method="post" class="form">
+  <div class="field">
+    <label>Nome *</label>
+    <input type="text" name="nome" required value="{{ paziente.nome if paziente else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Cognome *</label>
-    <input type="text" name="cognome" class="form-control" required
-           value="{{ paziente.cognome if paziente else '' }}">
+  <div class="field">
+    <label>Cognome *</label>
+    <input type="text" name="cognome" required value="{{ paziente.cognome if paziente else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Data di nascita</label>
-    <input type="date" name="data_nascita" class="form-control"
-           value="{{ paziente.data_nascita if paziente else '' }}">
+  <div class="field">
+    <label>Data di nascita</label>
+    <input type="date" name="data_nascita" value="{{ paziente.data_nascita if paziente else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Codice fiscale</label>
-    <input type="text" name="codice_fiscale" class="form-control" maxlength="16"
-           value="{{ paziente.codice_fiscale if paziente else '' }}">
+  <div class="field">
+    <label>Codice fiscale</label>
+    <input type="text" name="codice_fiscale" maxlength="16" value="{{ paziente.codice_fiscale if paziente else '' }}">
   </div>
-  <button type="submit" class="btn btn-primary">Salva</button>
-  <a href="/segreteria/pazienti" class="btn btn-secondary ms-2">Annulla</a>
+  <div class="actions">
+    <button type="submit" class="button primary">Salva</button>
+    <a href="/segreteria/pazienti" class="button secondary">Annulla</a>
+  </div>
 </form>
 {% endblock %}

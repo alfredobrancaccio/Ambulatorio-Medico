@@ -1,36 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="heading">
   <h2>Referti</h2>
-  <div>
-    <a href="/segreteria/referti/nuovo" class="btn btn-primary btn-sm">+ Nuovo</a>
-    <a href="/segreteria" class="btn btn-secondary btn-sm ms-1">← Segreteria</a>
+  <div class="row">
+    <a href="/segreteria/referti/nuovo" class="button primary small">+ Nuovo</a>
+    <a href="/segreteria" class="button secondary small">← Segreteria</a>
   </div>
 </div>
-
-<table class="table table-striped table-bordered table-hover">
-  <thead class="table-dark">
-    <tr><th>ID</th><th>Paziente</th><th>Esame</th><th>Data rilascio</th><th>Contenuto</th><th>Azioni</th></tr>
-  </thead>
-  <tbody>
-    {% for r in referti %}
-    <tr>
-      <td>{{ r.id }}</td>
-      <td>{{ r.paziente }}</td>
-      <td>{{ r.esame }}</td>
-      <td>{{ r.data_rilascio }}</td>
-      <td class="text-muted small">{{ (r.contenuto or "—")[:60] }}</td>
-      <td>
-        <a href="/segreteria/referti/{{ r.id }}/modifica" class="btn btn-sm btn-warning">Modifica</a>
-        <form method="post" action="/segreteria/referti/{{ r.id }}/elimina" class="d-inline"
-              onsubmit="return confirm('Eliminare questo referto?')">
-          <button class="btn btn-sm btn-danger">Elimina</button>
-        </form>
-      </td>
-    </tr>
-    {% else %}
-    <tr><td colspan="6" class="text-center text-muted">Nessun referto.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Paziente</th><th>Esame</th><th>Data rilascio</th><th>Contenuto</th><th>Azioni</th></tr>
+    </thead>
+    <tbody>
+      {% for r in referti %}
+      <tr>
+        <td>{{ r.id }}</td><td>{{ r.paziente }}</td><td>{{ r.esame }}</td>
+        <td>{{ r.data_rilascio }}</td>
+        <td class="muted">{{ (r.contenuto or "—")[:60] }}</td>
+        <td class="row">
+          <a href="/segreteria/referti/{{ r.id }}/modifica" class="button secondary small">Modifica</a>
+          <form method="post" action="/segreteria/referti/{{ r.id }}/elimina" style="display:inline"
+                onsubmit="return confirm('Eliminare questo referto?')">
+            <button class="button danger small">Elimina</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted" style="text-align:center">Nessun referto.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

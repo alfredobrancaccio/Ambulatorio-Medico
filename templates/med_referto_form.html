@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Nuovo referto — Dr. {{ medico.nome }} {{ medico.cognome }}</h2>
-
-<form method="post" class="mt-3" style="max-width:520px">
-  <div class="mb-3">
-    <label class="form-label">Visita *</label>
-    <select name="visita_id" class="form-select" required>
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:4px;">Nuovo referto</h2>
+<p class="eyebrow mb2">Medico: Dr. {{ medico.nome }} {{ medico.cognome }}</p>
+<form method="post" class="form">
+  <div class="field">
+    <label>Visita *</label>
+    <select name="visita_id" required>
       <option value="">-- seleziona --</option>
       {% for v in visite %}
       <option value="{{ v.id }}">
@@ -14,15 +14,17 @@
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Data rilascio *</label>
-    <input type="date" name="data_rilascio" class="form-control" required>
+  <div class="field">
+    <label>Data rilascio *</label>
+    <input type="date" name="data_rilascio" required>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Contenuto</label>
-    <textarea name="contenuto" class="form-control" rows="4" placeholder="Esito della visita..."></textarea>
+  <div class="field">
+    <label>Contenuto</label>
+    <textarea name="contenuto" rows="5"></textarea>
   </div>
-  <button type="submit" class="btn btn-primary">Salva</button>
-  <a href="/medico/{{ medico.id }}" class="btn btn-secondary ms-2">Annulla</a>
+  <div class="actions">
+    <button type="submit" class="button primary">Salva</button>
+    <a href="/medico/{{ medico.id }}" class="button secondary">Annulla</a>
+  </div>
 </form>
 {% endblock %}

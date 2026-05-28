@@ -60,11 +60,3 @@ INSERT INTO prescrizioni (id, medico_id, paziente_id, farmaco, dose, data_emissi
     (5, 5, 5, 'Magnesio',   '300mg/die',        '2026-05-14'),
     (6, 6, 6, 'Eparina',    '5000UI/die',       '2026-05-15')
 ON CONFLICT (id) DO NOTHING;
-
-SELECT setval('pazienti_id_seq',    (SELECT MAX(id) FROM pazienti));
-SELECT setval('reparti_id_seq',     (SELECT MAX(id) FROM reparti));
-SELECT setval('medici_id_seq',      (SELECT MAX(id) FROM medici));
-SELECT setval('esami_id_seq',       (SELECT MAX(id) FROM esami));
-SELECT setval('visite_id_seq',      (SELECT MAX(id) FROM visite));
-SELECT setval('referti_id_seq',     (SELECT MAX(id) FROM referti));
-SELECT setval('prescrizioni_id_seq',(SELECT MAX(id) FROM prescrizioni));

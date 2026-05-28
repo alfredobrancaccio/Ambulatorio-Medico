@@ -1,37 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">Segreteria</h2>
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:20px;">Segreteria</h2>
 
-<div class="row g-3 mb-5">
+<div class="stats">
   {% for chiave, label in [
       ("pazienti","Pazienti"), ("reparti","Reparti"), ("medici","Medici"),
       ("esami","Esami"), ("visite","Visite"), ("referti","Referti"), ("prescrizioni","Prescrizioni")
   ] %}
-  <div class="col-6 col-sm-4 col-lg-3">
-    <div class="card text-center border-primary h-100">
-      <div class="card-body">
-        <div class="fs-1 fw-bold text-primary">{{ stats[chiave] }}</div>
-        <div class="text-muted small">{{ label }}</div>
-      </div>
-    </div>
+  <div class="stat">
+    <div class="number">{{ stats[chiave] }}</div>
+    <div class="label">{{ label }}</div>
   </div>
   {% endfor %}
 </div>
 
-<h5 class="mb-3">Gestione</h5>
-<div class="row g-2">
-  {% for href, label, col in [
-      ("/segreteria/pazienti",    "Pazienti",    "btn-outline-primary"),
-      ("/segreteria/reparti",     "Reparti",     "btn-outline-secondary"),
-      ("/segreteria/medici",      "Medici",      "btn-outline-success"),
-      ("/segreteria/esami",       "Esami",       "btn-outline-warning"),
-      ("/segreteria/visite",      "Visite",      "btn-outline-info"),
-      ("/segreteria/referti",     "Referti",     "btn-outline-dark"),
-      ("/segreteria/prescrizioni","Prescrizioni","btn-outline-danger")
+<p class="eyebrow mb2">Gestione</p>
+<div class="nav-grid">
+  {% for href, label in [
+      ("/segreteria/pazienti",    "Pazienti"),
+      ("/segreteria/reparti",     "Reparti"),
+      ("/segreteria/medici",      "Medici"),
+      ("/segreteria/esami",       "Esami"),
+      ("/segreteria/visite",      "Visite"),
+      ("/segreteria/referti",     "Referti"),
+      ("/segreteria/prescrizioni","Prescrizioni")
   ] %}
-  <div class="col-auto">
-    <a href="{{ href }}" class="btn {{ col }}">{{ label }}</a>
-  </div>
+  <a href="{{ href }}" class="button secondary">{{ label }}</a>
   {% endfor %}
 </div>
 {% endblock %}

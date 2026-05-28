@@ -1,3 +1,5 @@
+import app_db
+
 _SQL_MEDICO_FULL = """
     SELECT m.id, m.nome, m.cognome, m.reparto_id, r.nome AS reparto
     FROM medici m JOIN reparti r ON r.id = m.reparto_id
@@ -20,11 +22,11 @@ _SQL_VISITA_FULL = """
 # ── SEGRETERIA ────────────────────────────────────────────────────────────────
 
 class SegretariaREPL:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        pass
 
     def cmd_pazienti(self, args):
-        righe = self.db.query(
+        righe = app_db.query(
             "SELECT id, nome, cognome, data_nascita, codice_fiscale"
             " FROM pazienti ORDER BY cognome, nome"
         )
@@ -34,21 +36,19 @@ class SegretariaREPL:
                   p["data_nascita"] or "-", p["codice_fiscale"] or "-")
 
     def cmd_reparti(self, args):
-        righe = self.db.query("SELECT id, nome FROM reparti ORDER BY nome")
+        righe = app_db.query("SELECT id, nome FROM reparti ORDER BY nome")
         print("ID", "Reparto")
         for r in righe:
             print(r["id"], r["nome"])
 
     def cmd_medici(self, args):
-        righe = self.db.query(
-            _SQL_MEDICO_FULL + " ORDER BY m.cognome, m.nome"
-        )
+        righe = app_db.query(_SQL_MEDICO_FULL + " ORDER BY m.cognome, m.nome")
         print("ID", "Nome", "Cognome", "Reparto")
         for m in righe:
             print(m["id"], m["nome"], m["cognome"], m["reparto"])
 
     def cmd_esami(self, args):
-        righe = self.db.query("""
+        righe = app_db.query("""
             SELECT e.id, e.nome, r.nome AS reparto
             FROM esami e JOIN reparti r ON r.id = e.reparto_id
             ORDER BY r.nome, e.nome
@@ -58,7 +58,7 @@ class SegretariaREPL:
             print(e["id"], e["nome"], e["reparto"])
 
     def cmd_visite(self, args):
-        righe = self.db.query(_SQL_VISITA_FULL + " ORDER BY v.data DESC, v.id")
+        righe = app_db.query(_SQL_VISITA_FULL + " ORDER BY v.data DESC, v.id")
         if not righe:
             print("Nessuna visita.")
             return
@@ -67,7 +67,7 @@ class SegretariaREPL:
             print(v["id"], v["paziente"], v["medico"], v["esame"], v["data"])
 
     def cmd_referti(self, args):
-        righe = self.db.query("""
+        righe = app_db.query("""
             SELECT rf.id, rf.data_rilascio, rf.contenuto,
                    p.nome || ' ' || p.cognome AS paziente,
                    e.nome AS esame
@@ -86,7 +86,7 @@ class SegretariaREPL:
                   r["esame"], (r["contenuto"] or "-")[:40])
 
     def cmd_prescrizioni(self, args):
-        righe = self.db.query("""
+        righe = app_db.query("""
             SELECT pr.id, pr.farmaco, pr.dose, pr.data_emissione,
                    m.nome || ' ' || m.cognome AS medico,
                    p.nome || ' ' || p.cognome AS paziente
@@ -105,7 +105,7 @@ class SegretariaREPL:
 
     def cmd_statistiche(self, args):
         def n(sql):
-            return self.db.query_one(sql)["COUNT(*)"]
+            return app_db.query_one(sql)["COUNT(*)"]
         print("Pazienti:     ", n("SELECT COUNT(*) FROM pazienti"))
         print("Reparti:      ", n("SELECT COUNT(*) FROM reparti"))
         print("Medici:       ", n("SELECT COUNT(*) FROM medici"))
@@ -121,9 +121,9 @@ class SegretariaREPL:
         nome, cognome = args[0], args[1]
         data_nascita   = args[2] if len(args) > 2 else None
         codice_fiscale = args[3] if len(args) > 3 else None
-        nid = self.db.execute(
+        nid = app_db.execute(
             "INSERT INTO pazienti (nome, cognome, data_nascita, codice_fiscale)"
-            " VALUES (?, ?, ?, ?) RETURNING id",
+            " VALUES (?, ?, ?, ?)",
             (nome, cognome, data_nascita, codice_fiscale),
         )
         print(f"[OK] Paziente aggiunto con ID {nid}.")
@@ -132,8 +132,8 @@ class SegretariaREPL:
         if len(args) != 1:
             print("[ERRORE] Uso: nuovo-reparto <Nome>")
             return
-        nid = self.db.execute(
-            "INSERT INTO reparti (nome) VALUES (?) RETURNING id", (args[0],)
+        nid = app_db.execute(
+            "INSERT INTO reparti (nome) VALUES (?)", (args[0],)
         )
         print(f"[OK] Reparto aggiunto con ID {nid}.")
 
@@ -147,11 +147,11 @@ class SegretariaREPL:
         except ValueError:
             print("[ERRORE] reparto_id deve essere un numero intero.")
             return
-        if not self.db.query_one("SELECT id FROM reparti WHERE id = ?", (reparto_id,)):
+        if not app_db.query_one("SELECT id FROM reparti WHERE id = ?", (reparto_id,)):
             print(f"[ERRORE] Reparto con ID {reparto_id} non trovato.")
             return
-        nid = self.db.execute(
-            "INSERT INTO medici (nome, cognome, reparto_id) VALUES (?, ?, ?) RETURNING id",
+        nid = app_db.execute(
+            "INSERT INTO medici (nome, cognome, reparto_id) VALUES (?, ?, ?)",
             (nome, cognome, reparto_id),
         )
         print(f"[OK] Medico aggiunto con ID {nid}.")
@@ -166,11 +166,11 @@ class SegretariaREPL:
         except ValueError:
             print("[ERRORE] reparto_id deve essere un numero intero.")
             return
-        if not self.db.query_one("SELECT id FROM reparti WHERE id = ?", (reparto_id,)):
+        if not app_db.query_one("SELECT id FROM reparti WHERE id = ?", (reparto_id,)):
             print(f"[ERRORE] Reparto con ID {reparto_id} non trovato.")
             return
-        nid = self.db.execute(
-            "INSERT INTO esami (nome, reparto_id) VALUES (?, ?) RETURNING id",
+        nid = app_db.execute(
+            "INSERT INTO esami (nome, reparto_id) VALUES (?, ?)",
             (nome, reparto_id),
         )
         print(f"[OK] Esame aggiunto con ID {nid}.")
@@ -187,44 +187,44 @@ class SegretariaREPL:
             print("[ERRORE] Gli ID devono essere numeri interi.")
             return
         data = args[3]
-        if not self.db.query_one("SELECT id FROM pazienti WHERE id = ?", (paziente_id,)):
+        if not app_db.query_one("SELECT id FROM pazienti WHERE id = ?", (paziente_id,)):
             print(f"[ERRORE] Paziente con ID {paziente_id} non trovato.")
             return
-        medico = self.db.query_one("SELECT reparto_id FROM medici WHERE id = ?", (medico_id,))
+        medico = app_db.query_one("SELECT reparto_id FROM medici WHERE id = ?", (medico_id,))
         if not medico:
             print(f"[ERRORE] Medico con ID {medico_id} non trovato.")
             return
-        esame = self.db.query_one("SELECT nome, reparto_id FROM esami WHERE id = ?", (esame_id,))
+        esame = app_db.query_one("SELECT nome, reparto_id FROM esami WHERE id = ?", (esame_id,))
         if not esame:
             print(f"[ERRORE] Esame con ID {esame_id} non trovato.")
             return
         if esame["reparto_id"] != medico["reparto_id"]:
-            print(f"[ERRORE] L'esame non appartiene al reparto del medico.")
+            print("[ERRORE] L'esame non appartiene al reparto del medico.")
             return
-        nid = self.db.execute(
+        nid = app_db.execute(
             "INSERT INTO visite (paziente_id, medico_id, esame_id, data)"
-            " VALUES (?, ?, ?, ?) RETURNING id",
+            " VALUES (?, ?, ?, ?)",
             (paziente_id, medico_id, esame_id, data),
         )
         print(f"[OK] Visita aggiunta con ID {nid}.")
 
     def cmd_help(self, args):
         righe = [
-            ("pazienti",                                         "Elenca i pazienti"),
-            ("reparti",                                          "Elenca i reparti"),
-            ("medici",                                           "Elenca i medici"),
-            ("esami",                                            "Elenca gli esami"),
-            ("visite",                                           "Elenca le visite"),
-            ("referti",                                          "Elenca i referti"),
-            ("prescrizioni",                                     "Elenca le prescrizioni"),
-            ("statistiche",                                      "Contatori generali"),
-            ("nuovo-paziente <Nome> <Cognome> [<data> <CF>]",   "Aggiunge un paziente"),
-            ("nuovo-reparto <Nome>",                             "Aggiunge un reparto"),
-            ("nuovo-medico <Nome> <Cognome> <reparto_id>",      "Aggiunge un medico"),
-            ("nuovo-esame <Nome> <reparto_id>",                  "Aggiunge un esame"),
-            ("nuova-visita <paz_id> <med_id> <esame_id> <data>","Prenota una visita"),
-            ("help",                                             "Mostra questo messaggio"),
-            ("esci",                                             "Esce dal programma"),
+            ("pazienti",                                          "Elenca i pazienti"),
+            ("reparti",                                           "Elenca i reparti"),
+            ("medici",                                            "Elenca i medici"),
+            ("esami",                                             "Elenca gli esami"),
+            ("visite",                                            "Elenca le visite"),
+            ("referti",                                           "Elenca i referti"),
+            ("prescrizioni",                                      "Elenca le prescrizioni"),
+            ("statistiche",                                       "Contatori generali"),
+            ("nuovo-paziente <Nome> <Cognome> [<data> <CF>]",    "Aggiunge un paziente"),
+            ("nuovo-reparto <Nome>",                              "Aggiunge un reparto"),
+            ("nuovo-medico <Nome> <Cognome> <reparto_id>",       "Aggiunge un medico"),
+            ("nuovo-esame <Nome> <reparto_id>",                   "Aggiunge un esame"),
+            ("nuova-visita <paz_id> <med_id> <esame_id> <data>", "Prenota una visita"),
+            ("help",                                              "Mostra questo messaggio"),
+            ("esci",                                              "Esce dal programma"),
         ]
         for cmd, desc in righe:
             print(f"  {cmd}: {desc}")
@@ -232,20 +232,20 @@ class SegretariaREPL:
     def esegui(self):
         print("[Segreteria] Digita 'help' per i comandi.")
         comandi = {
-            "pazienti":      self.cmd_pazienti,
-            "reparti":       self.cmd_reparti,
-            "medici":        self.cmd_medici,
-            "esami":         self.cmd_esami,
-            "visite":        self.cmd_visite,
-            "referti":       self.cmd_referti,
-            "prescrizioni":  self.cmd_prescrizioni,
-            "statistiche":   self.cmd_statistiche,
-            "nuovo-paziente":self.cmd_nuovo_paziente,
-            "nuovo-reparto": self.cmd_nuovo_reparto,
-            "nuovo-medico":  self.cmd_nuovo_medico,
-            "nuovo-esame":   self.cmd_nuovo_esame,
-            "nuova-visita":  self.cmd_nuova_visita,
-            "help":          self.cmd_help,
+            "pazienti":       self.cmd_pazienti,
+            "reparti":        self.cmd_reparti,
+            "medici":         self.cmd_medici,
+            "esami":          self.cmd_esami,
+            "visite":         self.cmd_visite,
+            "referti":        self.cmd_referti,
+            "prescrizioni":   self.cmd_prescrizioni,
+            "statistiche":    self.cmd_statistiche,
+            "nuovo-paziente": self.cmd_nuovo_paziente,
+            "nuovo-reparto":  self.cmd_nuovo_reparto,
+            "nuovo-medico":   self.cmd_nuovo_medico,
+            "nuovo-esame":    self.cmd_nuovo_esame,
+            "nuova-visita":   self.cmd_nuova_visita,
+            "help":           self.cmd_help,
         }
         while True:
             try:
@@ -270,12 +270,11 @@ class SegretariaREPL:
 # ── MEDICO ────────────────────────────────────────────────────────────────────
 
 class MedicoREPL:
-    def __init__(self, db, medico):
-        self.db     = db
+    def __init__(self, medico):
         self.medico = medico
 
     def cmd_visite(self, args):
-        righe = self.db.query(
+        righe = app_db.query(
             _SQL_VISITA_FULL + " WHERE v.medico_id = ? ORDER BY v.data DESC",
             (self.medico["id"],),
         )
@@ -297,7 +296,7 @@ class MedicoREPL:
             return
         data_rilascio = args[1]
         contenuto     = " ".join(args[2:]) if len(args) > 2 else None
-        visita = self.db.query_one(
+        visita = app_db.query_one(
             "SELECT id, medico_id FROM visite WHERE id = ?", (visita_id,)
         )
         if not visita:
@@ -306,9 +305,9 @@ class MedicoREPL:
         if visita["medico_id"] != self.medico["id"]:
             print("[ERRORE] Questa visita non è assegnata a te.")
             return
-        nid = self.db.execute(
+        nid = app_db.execute(
             "INSERT INTO referti (visita_id, data_rilascio, contenuto)"
-            " VALUES (?, ?, ?) RETURNING id",
+            " VALUES (?, ?, ?)",
             (visita_id, data_rilascio, contenuto),
         )
         print(f"[OK] Referto aggiunto con ID {nid}.")
@@ -323,39 +322,39 @@ class MedicoREPL:
             print("[ERRORE] paziente_id deve essere un numero intero.")
             return
         farmaco, dose, data_emissione = args[1], args[2], args[3]
-        if not self.db.query_one("SELECT id FROM pazienti WHERE id = ?", (paziente_id,)):
+        if not app_db.query_one("SELECT id FROM pazienti WHERE id = ?", (paziente_id,)):
             print(f"[ERRORE] Paziente con ID {paziente_id} non trovato.")
             return
-        nid = self.db.execute(
+        nid = app_db.execute(
             "INSERT INTO prescrizioni"
             " (medico_id, paziente_id, farmaco, dose, data_emissione)"
-            " VALUES (?, ?, ?, ?, ?) RETURNING id",
+            " VALUES (?, ?, ?, ?, ?)",
             (self.medico["id"], paziente_id, farmaco, dose, data_emissione),
         )
         print(f"[OK] Prescrizione aggiunta con ID {nid}.")
 
     def cmd_statistiche(self, args):
         mid = self.medico["id"]
-        nv  = self.db.query_one("SELECT COUNT(*) FROM visite WHERE medico_id = ?", (mid,))["COUNT(*)"]
-        nr  = self.db.query_one(
+        nv  = app_db.query_one("SELECT COUNT(*) FROM visite WHERE medico_id = ?", (mid,))["COUNT(*)"]
+        nr  = app_db.query_one(
             "SELECT COUNT(*) FROM referti rf"
             " JOIN visite v ON v.id = rf.visita_id WHERE v.medico_id = ?", (mid,)
         )["COUNT(*)"]
-        np_ = self.db.query_one(
+        np_ = app_db.query_one(
             "SELECT COUNT(*) FROM prescrizioni WHERE medico_id = ?", (mid,)
         )["COUNT(*)"]
-        print(f"Visite:        {nv}")
-        print(f"Referti emessi:{nr}")
-        print(f"Prescrizioni:  {np_}")
+        print(f"Visite:         {nv}")
+        print(f"Referti emessi: {nr}")
+        print(f"Prescrizioni:   {np_}")
 
     def cmd_help(self, args):
         righe = [
-            ("visite",                                            "Le mie visite"),
-            ("nuovo-referto <vis_id> <data> [<contenuto>]",      "Aggiunge un referto"),
+            ("visite",                                               "Le mie visite"),
+            ("nuovo-referto <vis_id> <data> [<contenuto>]",         "Aggiunge un referto"),
             ("nuova-prescrizione <paz_id> <farmaco> <dose> <data>", "Aggiunge una prescrizione"),
-            ("statistiche",                                       "Le mie statistiche"),
-            ("help",                                              "Mostra questo messaggio"),
-            ("esci",                                              "Esce dal programma"),
+            ("statistiche",                                          "Le mie statistiche"),
+            ("help",                                                 "Mostra questo messaggio"),
+            ("esci",                                                 "Esce dal programma"),
         ]
         for cmd, desc in righe:
             print(f"  {cmd}: {desc}")
@@ -365,11 +364,11 @@ class MedicoREPL:
               f" — {self.medico['reparto']}")
         print("Digita 'help' per i comandi.")
         comandi = {
-            "visite":              self.cmd_visite,
-            "nuovo-referto":       self.cmd_nuovo_referto,
-            "nuova-prescrizione":  self.cmd_nuova_prescrizione,
-            "statistiche":         self.cmd_statistiche,
-            "help":                self.cmd_help,
+            "visite":             self.cmd_visite,
+            "nuovo-referto":      self.cmd_nuovo_referto,
+            "nuova-prescrizione": self.cmd_nuova_prescrizione,
+            "statistiche":        self.cmd_statistiche,
+            "help":               self.cmd_help,
         }
         while True:
             try:
@@ -394,12 +393,11 @@ class MedicoREPL:
 # ── PAZIENTE ──────────────────────────────────────────────────────────────────
 
 class PazienteREPL:
-    def __init__(self, db, paziente):
-        self.db      = db
+    def __init__(self, paziente):
         self.paziente = paziente
 
     def cmd_visite(self, args):
-        righe = self.db.query(
+        righe = app_db.query(
             _SQL_VISITA_FULL + " WHERE v.paziente_id = ? ORDER BY v.data DESC",
             (self.paziente["id"],),
         )
@@ -411,7 +409,7 @@ class PazienteREPL:
             print(v["id"], v["medico"], v["esame"], v["reparto"], v["data"])
 
     def cmd_referti(self, args):
-        righe = self.db.query("""
+        righe = app_db.query("""
             SELECT rf.id, rf.data_rilascio, rf.contenuto,
                    e.nome AS esame,
                    m.nome || ' ' || m.cognome AS medico
@@ -431,7 +429,7 @@ class PazienteREPL:
                   r["medico"], (r["contenuto"] or "-")[:40])
 
     def cmd_prescrizioni(self, args):
-        righe = self.db.query("""
+        righe = app_db.query("""
             SELECT pr.id, pr.farmaco, pr.dose, pr.data_emissione,
                    m.nome || ' ' || m.cognome AS medico
             FROM prescrizioni pr
@@ -490,13 +488,11 @@ class PazienteREPL:
 # ── DISPATCHER ────────────────────────────────────────────────────────────────
 
 class AmbulatorioREPL:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        pass
 
     def _seleziona_medico(self):
-        medici = self.db.query(
-            _SQL_MEDICO_FULL + " ORDER BY m.cognome, m.nome"
-        )
+        medici = app_db.query(_SQL_MEDICO_FULL + " ORDER BY m.cognome, m.nome")
         print("\nMedici disponibili:")
         for m in medici:
             print(f"  [{m['id']}] Dr. {m['nome']} {m['cognome']} — {m['reparto']}")
@@ -510,15 +506,13 @@ class AmbulatorioREPL:
             except ValueError:
                 print("[ERRORE] Inserisci un numero intero.")
                 continue
-            m = self.db.query_one(
-                _SQL_MEDICO_FULL + " WHERE m.id = ?", (mid,)
-            )
+            m = app_db.query_one(_SQL_MEDICO_FULL + " WHERE m.id = ?", (mid,))
             if m:
                 return m
             print(f"[ERRORE] Medico con ID {mid} non trovato.")
 
     def _seleziona_paziente(self):
-        pazienti = self.db.query(
+        pazienti = app_db.query(
             "SELECT id, nome, cognome FROM pazienti ORDER BY cognome, nome"
         )
         print("\nPazienti disponibili:")
@@ -534,7 +528,7 @@ class AmbulatorioREPL:
             except ValueError:
                 print("[ERRORE] Inserisci un numero intero.")
                 continue
-            p = self.db.query_one(
+            p = app_db.query_one(
                 "SELECT id, nome, cognome FROM pazienti WHERE id = ?", (pid,)
             )
             if p:
@@ -555,17 +549,17 @@ class AmbulatorioREPL:
                 print("\nArrivederci.")
                 return
             if scelta in ("1", "segreteria"):
-                SegretariaREPL(self.db).esegui()
+                SegretariaREPL().esegui()
                 return
             if scelta in ("2", "medico"):
                 medico = self._seleziona_medico()
                 if medico:
-                    MedicoREPL(self.db, medico).esegui()
+                    MedicoREPL(medico).esegui()
                 return
             if scelta in ("3", "paziente"):
                 paziente = self._seleziona_paziente()
                 if paziente:
-                    PazienteREPL(self.db, paziente).esegui()
+                    PazienteREPL(paziente).esegui()
                 return
             if scelta in ("esci", "q"):
                 print("Arrivederci.")

@@ -1,102 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class="d-flex align-items-center gap-3 mb-4">
+<div class="heading">
   <div>
-    <h2 class="mb-0">{{ paziente.nome }} {{ paziente.cognome }}</h2>
-    {% if paziente.data_nascita %}
-    <small class="text-muted">Nato/a il {{ paziente.data_nascita }}</small>
-    {% endif %}
+    <h2>{{ paziente.nome }} {{ paziente.cognome }}</h2>
+    <span class="eyebrow">
+      {% if paziente.data_nascita %}Nato/a il {{ paziente.data_nascita }}{% endif %}
+      {% if paziente.codice_fiscale %} &nbsp;·&nbsp; CF: {{ paziente.codice_fiscale }}{% endif %}
+    </span>
   </div>
-  <a href="/paziente" class="btn btn-secondary btn-sm ms-auto">← Cambia paziente</a>
+  <a href="/paziente" class="button secondary small">← Cambia paziente</a>
 </div>
 
-<div class="row g-3 mb-4">
-  <div class="col-sm-4">
-    <div class="card text-center border-info">
-      <div class="card-body">
-        <div class="fs-1 fw-bold text-info">{{ visite|length }}</div>
-        <div class="text-muted">Visite</div>
-      </div>
-    </div>
+<div class="stats">
+  <div class="stat">
+    <div class="number">{{ stats.visite }}</div>
+    <div class="label">Visite</div>
   </div>
-  <div class="col-sm-4">
-    <div class="card text-center border-dark">
-      <div class="card-body">
-        <div class="fs-1 fw-bold text-dark">{{ referti|length }}</div>
-        <div class="text-muted">Referti</div>
-      </div>
-    </div>
+  <div class="stat">
+    <div class="number">{{ stats.referti }}</div>
+    <div class="label">Referti</div>
   </div>
-  <div class="col-sm-4">
-    <div class="card text-center border-danger">
-      <div class="card-body">
-        <div class="fs-1 fw-bold text-danger">{{ prescrizioni|length }}</div>
-        <div class="text-muted">Prescrizioni</div>
-      </div>
-    </div>
+  <div class="stat">
+    <div class="number">{{ stats.prescrizioni }}</div>
+    <div class="label">Prescrizioni</div>
   </div>
 </div>
 
-<h4>Visite</h4>
-<table class="table table-sm table-striped table-bordered mb-4">
-  <thead class="table-info">
-    <tr><th>ID</th><th>Medico</th><th>Esame</th><th>Reparto</th><th>Data</th><th>Note</th></tr>
-  </thead>
-  <tbody>
-    {% for v in visite %}
-    <tr>
-      <td>{{ v.id }}</td>
-      <td>{{ v.medico }}</td>
-      <td>{{ v.esame }}</td>
-      <td><span class="badge bg-info text-dark">{{ v.reparto }}</span></td>
-      <td>{{ v.data }}</td>
-      <td class="text-muted small">{{ v.note or "—" }}</td>
-    </tr>
-    {% else %}
-    <tr><td colspan="6" class="text-center text-muted">Nessuna visita.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<p class="section-title">Visite</p>
+<div class="table-wrap mb3">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Medico</th><th>Esame</th><th>Reparto</th><th>Data</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      {% for v in visite %}
+      <tr>
+        <td>{{ v.id }}</td><td>{{ v.medico }}</td>
+        <td>{{ v.esame }}</td>
+        <td><span class="badge info">{{ v.reparto }}</span></td>
+        <td>{{ v.data }}</td>
+        <td class="muted">{{ v.note or "—" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted" style="text-align:center">Nessuna visita.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-<h4>Referti</h4>
-<table class="table table-sm table-striped table-bordered mb-4">
-  <thead class="table-dark">
-    <tr><th>ID</th><th>Esame</th><th>Medico</th><th>Data rilascio</th><th>Contenuto</th></tr>
-  </thead>
-  <tbody>
-    {% for r in referti %}
-    <tr>
-      <td>{{ r.id }}</td>
-      <td>{{ r.esame }}</td>
-      <td>{{ r.medico }}</td>
-      <td>{{ r.data_rilascio }}</td>
-      <td class="text-muted small">{{ r.contenuto or "—" }}</td>
-    </tr>
-    {% else %}
-    <tr><td colspan="5" class="text-center text-muted">Nessun referto.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<p class="section-title">Referti</p>
+<div class="table-wrap mb3">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Esame</th><th>Data rilascio</th><th>Contenuto</th></tr>
+    </thead>
+    <tbody>
+      {% for r in referti %}
+      <tr>
+        <td>{{ r.id }}</td><td>{{ r.esame }}</td>
+        <td>{{ r.data_rilascio }}</td>
+        <td class="muted">{{ (r.contenuto or "—")[:80] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted" style="text-align:center">Nessun referto.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-<h4>Prescrizioni</h4>
-<table class="table table-sm table-striped table-bordered">
-  <thead class="table-danger">
-    <tr><th>ID</th><th>Farmaco</th><th>Dose</th><th>Data</th><th>Medico</th></tr>
-  </thead>
-  <tbody>
-    {% for pr in prescrizioni %}
-    <tr>
-      <td>{{ pr.id }}</td>
-      <td>{{ pr.farmaco }}</td>
-      <td>{{ pr.dose }}</td>
-      <td>{{ pr.data_emissione }}</td>
-      <td>{{ pr.medico }}</td>
-    </tr>
-    {% else %}
-    <tr><td colspan="5" class="text-center text-muted">Nessuna prescrizione.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+<p class="section-title">Prescrizioni</p>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Medico</th><th>Farmaco</th><th>Dose</th><th>Data</th></tr>
+    </thead>
+    <tbody>
+      {% for pr in prescrizioni %}
+      <tr>
+        <td>{{ pr.id }}</td><td>{{ pr.medico }}</td>
+        <td>{{ pr.farmaco }}</td><td>{{ pr.dose }}</td><td>{{ pr.data_emissione }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted" style="text-align:center">Nessuna prescrizione.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="heading">
   <h2>Esami</h2>
-  <div>
-    <a href="/segreteria/esami/nuovo" class="btn btn-primary btn-sm">+ Nuovo</a>
-    <a href="/segreteria" class="btn btn-secondary btn-sm ms-1">← Segreteria</a>
+  <div class="row">
+    <a href="/segreteria/esami/nuovo" class="button primary small">+ Nuovo</a>
+    <a href="/segreteria" class="button secondary small">← Segreteria</a>
   </div>
 </div>
-
-<table class="table table-striped table-bordered table-hover">
-  <thead class="table-warning">
-    <tr><th>ID</th><th>Esame</th><th>Reparto</th><th>Azioni</th></tr>
-  </thead>
-  <tbody>
-    {% for e in esami %}
-    <tr>
-      <td>{{ e.id }}</td>
-      <td>{{ e.nome }}</td>
-      <td><span class="badge bg-warning text-dark">{{ e.reparto }}</span></td>
-      <td>
-        <a href="/segreteria/esami/{{ e.id }}/modifica" class="btn btn-sm btn-warning">Modifica</a>
-        <form method="post" action="/segreteria/esami/{{ e.id }}/elimina" class="d-inline"
-              onsubmit="return confirm('Eliminare questo esame?')">
-          <button class="btn btn-sm btn-danger">Elimina</button>
-        </form>
-      </td>
-    </tr>
-    {% else %}
-    <tr><td colspan="4" class="text-center text-muted">Nessun esame.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Esame</th><th>Reparto</th><th>Azioni</th></tr>
+    </thead>
+    <tbody>
+      {% for e in esami %}
+      <tr>
+        <td>{{ e.id }}</td><td>{{ e.nome }}</td>
+        <td><span class="badge warn">{{ e.reparto }}</span></td>
+        <td class="row">
+          <a href="/segreteria/esami/{{ e.id }}/modifica" class="button secondary small">Modifica</a>
+          <form method="post" action="/segreteria/esami/{{ e.id }}/elimina" style="display:inline"
+                onsubmit="return confirm('Eliminare questo esame?')">
+            <button class="button danger small">Elimina</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted" style="text-align:center">Nessun esame.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

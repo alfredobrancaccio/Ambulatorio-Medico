@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{% if esame %}Modifica esame{% else %}Nuovo esame{% endif %}</h2>
-
-<form method="post" class="mt-3" style="max-width:480px">
-  <div class="mb-3">
-    <label class="form-label">Nome *</label>
-    <input type="text" name="nome" class="form-control" required
-           value="{{ esame.nome if esame else '' }}">
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:4px;">
+  {% if esame %}Modifica esame{% else %}Nuovo esame{% endif %}
+</h2>
+<form method="post" class="form">
+  <div class="field">
+    <label>Nome *</label>
+    <input type="text" name="nome" required value="{{ esame.nome if esame else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Reparto *</label>
-    <select name="reparto_id" class="form-select" required>
+  <div class="field">
+    <label>Reparto *</label>
+    <select name="reparto_id" required>
       <option value="">-- seleziona --</option>
       {% for r in reparti %}
       <option value="{{ r.id }}"
@@ -20,7 +20,9 @@
       {% endfor %}
     </select>
   </div>
-  <button type="submit" class="btn btn-primary">Salva</button>
-  <a href="/segreteria/esami" class="btn btn-secondary ms-2">Annulla</a>
+  <div class="actions">
+    <button type="submit" class="button primary">Salva</button>
+    <a href="/segreteria/esami" class="button secondary">Annulla</a>
+  </div>
 </form>
 {% endblock %}

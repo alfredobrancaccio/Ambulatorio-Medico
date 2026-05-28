@@ -1,30 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Area Paziente</h2>
-  <a href="/" class="btn btn-secondary btn-sm">← Home</a>
+<div class="heading">
+  <h2>Area Paziente — Seleziona profilo</h2>
+  <a href="/" class="button secondary small">← Home</a>
 </div>
-
-<p class="text-muted">Seleziona il tuo profilo per consultare visite, referti e prescrizioni.</p>
-
-<div class="row g-3 mt-1">
+<div class="grid three">
   {% for p in pazienti %}
-  <div class="col-md-4">
-    <a href="/paziente/{{ p.id }}" class="text-decoration-none">
-      <div class="card h-100 border-info shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-1">{{ p.nome }} {{ p.cognome }}</h5>
-          {% if p.data_nascita %}
-          <small class="text-muted">Nato/a il {{ p.data_nascita }}</small>
-          {% endif %}
-        </div>
-      </div>
-    </a>
+  <div class="panel center">
+    <div style="font-size:36px; margin-bottom:10px;">👤</div>
+    <h4>{{ p.nome }} {{ p.cognome }}</h4>
+    <p>
+      {% if p.data_nascita %}Nato/a il {{ p.data_nascita }}{% endif %}
+      {% if p.codice_fiscale %}<br>CF: {{ p.codice_fiscale }}{% endif %}
+    </p>
+    <a href="/paziente/{{ p.id }}" class="button secondary">Accedi</a>
   </div>
   {% else %}
-  <div class="col">
-    <p class="text-muted">Nessun paziente registrato.</p>
-  </div>
+  <p class="muted">Nessun paziente registrato.</p>
   {% endfor %}
 </div>
 {% endblock %}

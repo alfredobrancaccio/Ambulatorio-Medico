@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{% if prescrizione %}Modifica prescrizione{% else %}Nuova prescrizione{% endif %}</h2>
-
-<form method="post" class="mt-3" style="max-width:480px">
-  <div class="mb-3">
-    <label class="form-label">Medico *</label>
-    <select name="medico_id" class="form-select" required>
+<h2 style="font-size:22px; font-weight:700; color:#1a3a5c; margin-bottom:4px;">
+  {% if prescrizione %}Modifica prescrizione{% else %}Nuova prescrizione{% endif %}
+</h2>
+<form method="post" class="form">
+  <div class="field">
+    <label>Medico *</label>
+    <select name="medico_id" required>
       <option value="">-- seleziona --</option>
       {% for m in medici %}
       <option value="{{ m.id }}"
@@ -15,9 +16,9 @@
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Paziente *</label>
-    <select name="paziente_id" class="form-select" required>
+  <div class="field">
+    <label>Paziente *</label>
+    <select name="paziente_id" required>
       <option value="">-- seleziona --</option>
       {% for p in pazienti %}
       <option value="{{ p.id }}"
@@ -27,23 +28,24 @@
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Farmaco *</label>
-    <input type="text" name="farmaco" class="form-control" required
+  <div class="field">
+    <label>Farmaco *</label>
+    <input type="text" name="farmaco" required
            value="{{ prescrizione.farmaco if prescrizione else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Dose *</label>
-    <input type="text" name="dose" class="form-control" required
-           placeholder="es. 100mg/die"
+  <div class="field">
+    <label>Dose *</label>
+    <input type="text" name="dose" required
            value="{{ prescrizione.dose if prescrizione else '' }}">
   </div>
-  <div class="mb-3">
-    <label class="form-label">Data emissione *</label>
-    <input type="date" name="data_emissione" class="form-control" required
+  <div class="field">
+    <label>Data emissione *</label>
+    <input type="date" name="data_emissione" required
            value="{{ prescrizione.data_emissione if prescrizione else '' }}">
   </div>
-  <button type="submit" class="btn btn-primary">Salva</button>
-  <a href="/segreteria/prescrizioni" class="btn btn-secondary ms-2">Annulla</a>
+  <div class="actions">
+    <button type="submit" class="button primary">Salva</button>
+    <a href="/segreteria/prescrizioni" class="button secondary">Annulla</a>
+  </div>
 </form>
 {% endblock %}
